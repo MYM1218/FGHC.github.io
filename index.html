@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>风光火储协同控制平台</title>
+    <!-- Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ECharts 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- ========== 顶部状态栏 ========== -->
+        <header class="top-bar">
+            <div class="top-left">
+                <i class="fas fa-solar-panel logo-icon"></i>
+                <h1>风光火储协同控制平台</h1>
+            </div>
+            <div class="top-center">
+                <span class="mode-badge">当前模式：<strong id="currentMode">跟踪调度计划</strong></span>
+            </div>
+            <div class="top-right">
+                <span class="status-indicator online"><i class="fas fa-circle"></i> 系统正常</span>
+                <span class="user-info"><i class="fas fa-user-circle"></i> 调度管理员</span>
+            </div>
+        </header>
+
+        <!-- ========== 主体布局 ========== -->
+        <div class="main-layout">
+            <!-- 左侧导航 -->
+            <aside class="sidebar">
+                <nav>
+                    <a href="#" class="nav-item active" data-module="monitor">
+                        <i class="fas fa-desktop"></i> 运行状态监测
+                    </a>
+                    <a href="#" class="nav-item" data-module="forecast">
+                        <i class="fas fa-chart-line"></i> 预测与计划分析
+                    </a>
+                    <a href="#" class="nav-item" data-module="alarm">
+                        <i class="fas fa-exclamation-triangle"></i> 告警与事件管理
+                    </a>
+                    <a href="#" class="nav-item" data-module="control">
+                        <i class="fas fa-sliders-h"></i> 协同控制优化
+                    </a>
+                    <a href="#" class="nav-item" data-module="system">
+                        <i class="fas fa-cog"></i> 系统管理与配置
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- 右侧主内容区 -->
+            <main class="content-area" id="contentArea">
+                <!-- ==================== 模块1：运行状态监测 ==================== -->
+                <div class="module-panel active" id="panel-monitor">
+                    <h2 class="panel-title"><i class="fas fa-desktop"></i> 运行状态监测</h2>
+                    <!-- 数据卡片行 -->
+                    <div class="stats-grid">
+                        <div class="stat-card wind">
+                            <div class="stat-icon"><i class="fas fa-wind"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">风电实时功率</span>
+                                <span class="stat-value">48.2 <small>MW</small></span>
+                                <span class="stat-sub">可利用率 98.5%</span>
+                            </div>
+                        </div>
+                        <div class="stat-card solar">
+                            <div class="stat-icon"><i class="fas fa-sun"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">光伏实时功率</span>
+                                <span class="stat-value">32.6 <small>MW</small></span>
+                                <span class="stat-sub">辐照度 720 W/m²</span>
+                            </div>
+                        </div>
+                        <div class="stat-card thermal">
+                            <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">火电机组负荷</span>
+                                <span class="stat-value">156 <small>MW</small></span>
+                                <span class="stat-sub">煤耗 298 g/kWh</span>
+                            </div>
+                        </div>
+                        <div class="stat-card storage">
+                            <div class="stat-icon"><i class="fas fa-battery-full"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">储能SOC</span>
+                                <span class="stat-value">72 <small>%</small></span>
+                                <span class="stat-sub">充放电功率 +5.2 MW</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 图表区域 -->
+                    <div class="charts-row">
+                        <div class="chart-box">
+                            <h3><i class="fas fa-chart-area"></i> 总出力趋势 (MW)</h3>
+                            <div id="chartTotalOutput" class="chart-container"></div>
+                        </div>
+                        <div class="chart-box">
+                            <h3><i class="fas fa-chart-pie"></i> 各单元出力占比</h3>
+                            <div id="chartPieOutput" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- 并网点信息与设备状态 -->
+                    <div class="info-grid">
+                        <div class="info-panel">
+                            <h3><i class="fas fa-plug"></i> 并网点参数</h3>
+                            <ul>
+                                <li>电压：<strong>10.42 kV</strong></li>
+                                <li>频率：<strong>50.02 Hz</strong></li>
+                                <li>功率因数：<strong>0.98</strong></li>
+                                <li>电能质量：<span class="green">合格</span></li>
+                            </ul>
+                        </div>
+                        <div class="info-panel">
+                            <h3><i class="fas fa-microchip"></i> 设备状态卡片</h3>
+                            <div class="device-tags">
+                                <span class="tag running">风电 #1 运行</span>
+                                <span class="tag running">光伏 #3 运行</span>
+                                <span class="tag stop">火电 #2 停机</span>
+                                <span class="tag running">储能 PCS 运行</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== 模块2：预测与计划分析（默认隐藏） ==================== -->
+                <div class="module-panel" id="panel-forecast">
+                    <h2 class="panel-title"><i class="fas fa-chart-line"></i> 预测与计划分析</h2>
+                    <div class="charts-row">
+                        <div class="chart-box">
+                            <h3>风电功率预测 vs 实际</h3>
+                            <div id="chartWindForecast" class="chart-container"></div>
+                        </div>
+                        <div class="chart-box">
+                            <h3>光伏功率预测 vs 实际</h3>
+                            <div id="chartSolarForecast" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== 模块3：告警与事件管理（默认隐藏） ==================== -->
+                <div class="module-panel" id="panel-alarm">
+                    <h2 class="panel-title"><i class="fas fa-exclamation-triangle"></i> 告警与事件管理</h2>
+                    <div class="alarm-table-wrapper">
+                        <table class="alarm-table">
+                            <thead>
+                                <tr><th>时间</th><th>等级</th><th>设备</th><th>描述</th><th>状态</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr class="alarm-critical"><td>10:23:15</td><td><span class="badge badge-critical">紧急</span></td><td>储能PCS</td><td>过温保护动作</td><td>已处理</td></tr>
+                                <tr class="alarm-important"><td>10:18:02</td><td><span class="badge badge-important">重要</span></td><td>光伏逆变器#5</td><td>输出功率越上限</td><td>处理中</td></tr>
+                                <tr class="alarm-normal"><td>09:55:44</td><td><span class="badge badge-normal">一般</span></td><td>风电#3</td><td>通信延迟</td><td>已确认</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ==================== 模块4：协同控制优化（默认隐藏） ==================== -->
+                <div class="module-panel" id="panel-control">
+                    <h2 class="panel-title"><i class="fas fa-sliders-h"></i> 协同控制优化</h2>
+                    <div class="control-modes">
+                        <div class="mode-card active" data-mode="plan">跟踪调度计划</div>
+                        <div class="mode-card" data-mode="smooth">平抑功率波动</div>
+                        <div class="mode-card" data-mode="agc">AGC调频</div>
+                        <div class="mode-card" data-mode="avc">AVC调压</div>
+                        <div class="mode-card" data-mode="eco">经济优化运行</div>
+                    </div>
+                    <div class="charts-row">
+                        <div class="chart-box">
+                            <h3>计划跟踪偏差 (MW)</h3>
+                            <div id="chartPlanDeviation" class="chart-container"></div>
+                        </div>
+                        <div class="chart-box">
+                            <h3>储能充放电指令</h3>
+                            <div id="chartStorageCmd" class="chart-container"></div>
+                        </div>
+                    </div>
+                    <button class="btn-primary"><i class="fas fa-paper-plane"></i> 下发优化指令</button>
+                </div>
+
+                <!-- ==================== 模块5：系统管理与配置（默认隐藏） ==================== -->
+                <div class="module-panel" id="panel-system">
+                    <h2 class="panel-title"><i class="fas fa-cog"></i> 系统管理与配置</h2>
+                    <p>用户权限管理、设备台账、日志审计等功能区域（可扩展）。</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // 模块切换逻辑
+        const navItems = document.querySelectorAll('.nav-item');
+        const panels = document.querySelectorAll('.module-panel');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                navItems.forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                const target = this.getAttribute('data-module');
+                panels.forEach(p => p.classList.remove('active'));
+                document.getElementById('panel-' + target).classList.add('active');
+            });
+        });
+
+        // 初始化图表
+        function initCharts() {
+            // 总出力趋势图
+            var chartTotal = echarts.init(document.getElementById('chartTotalOutput'));
+            chartTotal.setOption({
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['风电', '光伏', '火电', '储能'] },
+                xAxis: { type: 'category', data: ['10:00','10:05','10:10','10:15','10:20','10:25'] },
+                yAxis: { type: 'value', name: 'MW' },
+                series: [
+                    { name: '风电', type: 'line', data: [48, 50, 47, 49, 48, 48], smooth: true, itemStyle: {color:'#2b9c7c'} },
+                    { name: '光伏', type: 'line', data: [30, 32, 33, 31, 32, 32], smooth: true, itemStyle: {color:'#e6a817'} },
+                    { name: '火电', type: 'line', data: [156, 155, 154, 156, 157, 156], smooth: true, itemStyle: {color:'#c44536'} },
+                    { name: '储能', type: 'line', data: [5, 4, 6, 5, 5, 5], smooth: true, itemStyle: {color:'#3b7cbf'} }
+                ]
+            });
+
+            // 出力占比饼图
+            var chartPie = echarts.init(document.getElementById('chartPieOutput'));
+            chartPie.setOption({
+                tooltip: { trigger: 'item' },
+                series: [{
+                    type: 'pie', radius: ['40%', '70%'],
+                    data: [
+                        { value: 48, name: '风电' },
+                        { value: 32, name: '光伏' },
+                        { value: 156, name: '火电' },
+                        { value: 5, name: '储能' }
+                    ],
+                    emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.5)' } }
+                }]
+            });
+
+            // 风电预测图
+            var chartWindFc = echarts.init(document.getElementById('chartWindForecast'));
+            chartWindFc.setOption({
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: ['11:00','12:00','13:00','14:00','15:00'] },
+                yAxis: { type: 'value', name: 'MW' },
+                series: [
+                    { name: '预测值', type: 'line', data: [52, 55, 50, 48, 46], smooth: true, itemStyle: {color:'#888'} },
+                    { name: '实际值', type: 'line', data: [50, 53, 49, 47, 45], smooth: true, itemStyle: {color:'#2b9c7c'} }
+                ]
+            });
+
+            // 光伏预测图
+            var chartSolarFc = echarts.init(document.getElementById('chartSolarForecast'));
+            chartSolarFc.setOption({
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: ['11:00','12:00','13:00','14:00','15:00'] },
+                yAxis: { type: 'value', name: 'MW' },
+                series: [
+                    { name: '预测值', type: 'line', data: [34, 35, 32, 30, 28], smooth: true, itemStyle: {color:'#888'} },
+                    { name: '实际值', type: 'line', data: [33, 34, 31, 29, 27], smooth: true, itemStyle: {color:'#e6a817'} }
+                ]
+            });
+
+            // 计划偏差图
+            var chartDev = echarts.init(document.getElementById('chartPlanDeviation'));
+            chartDev.setOption({
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: ['10:00','10:10','10:20','10:30','10:40'] },
+                yAxis: { type: 'value', name: 'MW' },
+                series: [{
+                    name: '偏差', type: 'bar', data: [0.5, -0.2, 0.8, -0.4, 0.3],
+                    itemStyle: { color: function(param) { return param.value >=0 ? '#10b981' : '#ef4444'; } }
+                }]
+            });
+
+            // 储能指令图
+            var chartStorCmd = echarts.init(document.getElementById('chartStorageCmd'));
+            chartStorCmd.setOption({
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: ['10:00','10:10','10:20','10:30','10:40'] },
+                yAxis: { type: 'value', name: 'MW' },
+                series: [
+                    { name: '指令值', type: 'line', data: [5.2, 4.8, 6.0, 5.5, 5.0], smooth: true }
+                ]
+            });
+        }
+
+        window.onload = initCharts;
+    </script>
+</body>
+</html>
